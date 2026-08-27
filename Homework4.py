@@ -77,3 +77,36 @@ class Customer:
         return (f"\nThe customer's name: {self.name}"
                 f"\nThe customer's email: {self.email}"
                 f"\nThe customer's total orders: {len(self.orders_list)}")
+
+
+class Order:
+    """Represents a customer's order containing a list of products."""
+
+    def __init__(self, products_list: list = None):
+        """Initialize a new Order instance.
+
+        :param products_list: An optional initial list of Product objects. Defaults to an empty list.
+        """
+        self.products_list = products_list if products_list is not None else []
+        self.total_price = self.calculate_total()
+
+    def add_product(self, product) -> None:
+        """Add a product to the order and recalculate the total amount.
+
+        :param product: The Product object to be added.
+        """
+        self.products_list.append(product)
+        self.calculate_total()
+
+    def calculate_total(self) -> int | float:
+        """Calculate and return the total price of all products in the order.
+
+        :return: Total price of the order.
+        """
+        self.total_price = sum(product.price for product in self.products_list)
+        return self.total_price
+
+    def __str__(self) -> str:
+        """Return a string representation of the order."""
+        return (f"\nThe order: {len(self.products_list)} items"
+                f"\nThe total price: {self.total_price:} UAH")
