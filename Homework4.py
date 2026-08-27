@@ -4,7 +4,7 @@
 class Product:
     """Represents a product in a store inventory."""
 
-    def __init__(self, name, category, price, product_count):
+    def __init__(self, name: str, category: str, price: int | float, product_count: int):
         """Initialize a new Product instance.
 
         :param name: The name of the product.
@@ -41,9 +41,39 @@ class Product:
 
         print(f"The stock quantity of {self.name} is now {self.price}.")
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string representation of the product."""
         return (f"\nThe product's name: {self.name} "
                 f"\nThe product's category: {self.category}"
                 f"\nThe product's price: {self.price}"
                 f"\nThe product's count: {self.product_count}")
+
+
+class Customer:
+    """Represents a customer in the system."""
+
+    def __init__(self, name: str, email: str, orders_list: list = None):
+        """Initialize a new Customer instance.
+
+        :param name: The name of the customer.
+        :param email: The email address of the customer.
+        :param orders_list: An optional initial list of orders. Defaults to an empty list.
+        """
+        self.name = name
+        self.email = email
+        self.orders_list = orders_list if orders_list is not None else []
+
+    def add_order(self, order) -> None:
+        """Add a new order to the customer's order history.
+
+        :param order: The order details or order object to be added.
+        """
+        self.orders_list.append(order)
+
+        print(f"The order has been added to the customer {self.name}.")
+
+    def __str__(self) -> str:
+        """Return a string representation of the customer."""
+        return (f"\nThe customer's name: {self.name}"
+                f"\nThe customer's email: {self.email}"
+                f"\nThe customer's total orders: {len(self.orders_list)}")
