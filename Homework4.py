@@ -4,7 +4,7 @@
 class Product:
     """Represents a product in a store inventory."""
 
-    def __init__(self, name: str, category: str, price: int | float, product_count: int):
+    def __init__(self, name: str, category: str, price: float, product_count: int):
         """Initialize a new Product instance.
 
         :param name: The name of the product.
@@ -17,29 +17,27 @@ class Product:
         self.price = price
         self.product_count = product_count
 
-    def update_price(self, new_price: int) -> None:
+    def update_price(self, new_price: int):
         """Update the price of the product.
 
         :param new_price: The new price to be set.
         """
-        if new_price < 0:
-            raise ValueError("New price cannot be negative.")
+        if new_price > 0:
+            self.price = new_price
+            print(f"The price of {self.name} is now {self.price} UAH.")
+        else:
+            print("Price must be greater than 0.")
 
-        self.price = new_price
+    def update_count(self, amount: int):
+        """Update the product stock quantity (positive or negative adjustment).
 
-        print(f"The price of {self.name} is now {self.price} UAH.")
-
-    def update_count(self, new_count: int) -> None:
-        """Update the stock quantity of the product.
-
-        :param new_count: The new stock quantity to be set.
+        :param amount: The number of units to add (positive) or remove (negative).
         """
-        if new_count < 0:
-            raise ValueError("New stock quantity cannot be negative.")
-
-        self.product_count = new_count
-
-        print(f"The stock quantity of {self.name} is now {self.price}.")
+        if self.product_count + amount >= 0:
+            self.product_count += amount
+            print(f"New stock quantity for '{self.name}': {self.product_count} units.")
+        else:
+            print(f"Insufficient stock for '{self.name}'.")
 
     def __str__(self) -> str:
         """Return a string representation of the product."""
@@ -49,21 +47,57 @@ class Product:
                 f"\nThe product's count: {self.product_count}")
 
 
+class Order:
+    """Represents a customer's order containing a list of products."""
+
+    def __init__(self):
+        """Initialize a new Order instance."""
+        self.products_list = []
+        self.total_price = self.calculate_total()
+
+    def add_product(self, product: Product, quantity: int):
+        """Add a product to the order and recalculate the total amount.
+
+        :param product: The Product object to be added.
+        :param quantity: The quantity of the product to be added.
+        """
+        if product.product_count >= quantity:
+            for _ in range(quantity):
+                self.products_list.append(product)
+            product.update_count(-quantity)
+            self.calculate_total()
+            print(f"Added {quantity} pieces of '{product.name}' to the order.")
+        else:
+            print(f"Unable to add '{product.name}': only {product.product_count} left in stock.")
+
+    def calculate_total(self) -> float:
+        """Calculate and return the total price of all products in the order.
+
+        :return: Total price of the order.
+        """
+        self.total_price = sum(product.price for product in self.products_list)
+        return self.total_price
+
+    def __str__(self) -> str:
+        """Return a string representation of the order."""
+        return (f"\nThe order: {len(self.products_list)} items"
+                f"\nThe total price: {self.total_price:} UAH")
+
+
 class Customer:
     """Represents a customer in the system."""
 
-    def __init__(self, name: str, email: str, orders_list: list = None):
+    def __init__(self, name: str, email: str):
         """Initialize a new Customer instance.
 
         :param name: The name of the customer.
         :param email: The email address of the customer.
-        :param orders_list: An optional initial list of orders. Defaults to an empty list.
         """
         self.name = name
         self.email = email
-        self.orders_list = orders_list if orders_list is not None else []
+        self.orders_list = []
 
-    def add_order(self, order) -> None:
+    def add_order(self, order: Order):
         """Add a new order to the customer's order history.
 
         :param order: The order details or order object to be added.
@@ -77,36 +111,3 @@ class Customer:
         return (f"\nThe customer's name: {self.name}"
                 f"\nThe customer's email: {self.email}"
                 f"\nThe customer's total orders: {len(self.orders_list)}")
-
-
-class Order:
-    """Represents a customer's order containing a list of products."""
-
-    def __init__(self, products_list: list = None):
-        """Initialize a new Order instance.
-
-        :param products_list: An optional initial list of Product objects. Defaults to an empty list.
-        """
-        self.products_list = products_list if products_list is not None else []
-        self.total_price = self.calculate_total()
-
-    def add_product(self, product) -> None:
-        """Add a product to the order and recalculate the total amount.
-
-        :param product: The Product object to be added.
-        """
-        self.products_list.append(product)
-        self.calculate_total()
-
-    def calculate_total(self) -> int | float:
-        """Calculate and return the total price of all products in the order.
-
-        :return: Total price of the order.
-        """
-        self.total_price = sum(product.price for product in self.products_list)
-        return self.total_price
-
-    def __str__(self) -> str:
-        """Return a string representation of the order."""
-        return (f"\nThe order: {len(self.products_list)} items"
-                f"\nThe total price: {self.total_price:} UAH")
