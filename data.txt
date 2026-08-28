@@ -1,0 +1,8 @@
+PRODUCTS
+LEGO Star Wars,конструктор,2500,10
+Ведмедик,м'яка іграшка,450,15
+Монополія,настільна гра,800,5
+
+CUSTOMERS
+Іван Петренко,ivan@example.com
+Олена Коваль,olena@example.com
