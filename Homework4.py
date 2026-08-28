@@ -1,3 +1,11 @@
+"""Store Management System.
+
+This module provides classes for managing store products, customers, and orders,
+including loading initial data from external text files.
+"""
+import os
+
+
 # Task 1
 
 
@@ -24,9 +32,9 @@ class Product:
         """
         if new_price > 0:
             self.price = new_price
-            print(f"The price of {self.name} is now {self.price} UAH.")
+            print(f"\nThe price of {self.name} is now {self.price} UAH.")
         else:
-            print("Price must be greater than 0.")
+            print("\nPrice must be greater than 0.")
 
     def update_count(self, amount: int):
         """Update the product stock quantity (positive or negative adjustment).
@@ -35,9 +43,9 @@ class Product:
         """
         if self.product_count + amount >= 0:
             self.product_count += amount
-            print(f"New stock quantity for '{self.name}': {self.product_count} units.")
+            print(f"\nNew stock quantity for '{self.name}': {self.product_count} units.")
         else:
-            print(f"Insufficient stock for '{self.name}'.")
+            print(f"\nInsufficient stock for '{self.name}'.")
 
     def __str__(self) -> str:
         """Return a string representation of the product."""
@@ -66,9 +74,9 @@ class Order:
                 self.products_list.append(product)
             product.update_count(-quantity)
             self.calculate_total()
-            print(f"Added {quantity} pieces of '{product.name}' to the order.")
+            print(f"\nAdded {quantity} pieces of '{product.name}' to the order.")
         else:
-            print(f"Unable to add '{product.name}': only {product.product_count} left in stock.")
+            print(f"\nUnable to add '{product.name}': only {product.product_count} left in stock.")
 
     def calculate_total(self) -> float:
         """Calculate and return the total price of all products in the order.
@@ -104,10 +112,95 @@ class Customer:
         """
         self.orders_list.append(order)
 
-        print(f"The order has been added to the customer {self.name}.")
+        print(f"\nThe order has been added to the customer {self.name}.")
 
     def __str__(self) -> str:
         """Return a string representation of the customer."""
         return (f"\nThe customer's name: {self.name}"
                 f"\nThe customer's email: {self.email}"
                 f"\nThe customer's total orders: {len(self.orders_list)}")
+
+
+# Task 2
+
+
+class Store:
+    """Represents a store management system that holds inventory and customer accounts."""
+
+    def __init__(self):
+        """Initialize an empty store with no products and no customers."""
+        self.products = []
+        self.customers = []
+
+    def load_data_from_file(self, file_name: str):
+        """Load initial product and customer data from a TXT file.
+
+        :param file_name: The path to the text file containing PRODUCTS and CUSTOMERS sections.
+        """
+        if not os.path.exists(file_name):
+            print(f"\nFile '{file_name}' not found")
+            return
+
+        current_section = None
+
+        with open(file_name, "r", encoding="utf-8") as file:
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue
+
+                if line == "PRODUCTS":
+                    current_section = "PRODUCTS"
+                    continue
+
+                if line == "CUSTOMERS":
+                    current_section = "CUSTOMERS"
+                    continue
+
+                if current_section == "PRODUCTS":
+                    name, category, price, product_count = line.split(",")
+                    product = Product(name.strip(), category.strip(),
+                                      float(price), int(product_count))
+                    self.products.append(product)
+
+                elif current_section == "CUSTOMERS":
+                    name, email = line.split(",")
+                    customer = Customer(name.strip(), email.strip())
+                    self.customers.append(customer)
+
+        print(f"\nLoaded {len(self.products)} products."
+              f"\nLoaded {len(self.customers)} customers.")
+
+    def __str__(self) -> str:
+        """Return a string representation of the store."""
+        return (f"\nThe store has: {len(self.products)} products"
+                f"\nThe store has: {len(self.customers)} customers")
+
+
+store = Store()
+store.load_data_from_file("data.txt")
+
+print("\n--- Product List ---")
+for p in store.products:
+    print(p)
+
+print("\n--- Customer List ---")
+for c in store.customers:
+    print(c)
+
+print("\n--- Creating Order ---")
+customer1 = store.customers[0]
+lego = store.products[0]
+monopoly = store.products[2]
+
+order1 = Order()
+order1.add_product(lego, quantity=1)
+order1.add_product(monopoly, quantity=2)
+
+customer1.add_order(order1)
+
+print("\n--- Updating Price & Final Status ---")
+lego.update_price(2700.0)
+
+print(f"\nCustomer Status: {customer1}")
+print(f"\nOrder Details: {customer1.orders_list[0]}")
